@@ -15,9 +15,6 @@ end
 
 --moveEvent
 function M:SendCmdSceneMoveEvent(cmdSceneMoveEvent, fCallback)
-
-    Log.Print("CmdSceneMove")
-
     Network.Send2("CmdSceneMove", {cmdSceneMoveEvent = cmdSceneMoveEvent}, fCallback)
 end
 

@@ -39,7 +39,7 @@ function M:MoveTo(vec3_pos)
     local viewEntity = self.viewEntity
     local modelEntity = self.modelEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
-    navMeshAgent:Move(vec3_pos)
+    navMeshAgent:SetDestination(vec3_pos)
 end
 
 --瞬间移动到某一位置

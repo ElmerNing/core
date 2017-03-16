@@ -10,12 +10,6 @@ local M = class(..., SubBase)
 function M:ctor(...)
     M.super.ctor(self, ...)
 
-
-    local self = self
-local ret, msg = pcall(function() 
-
-
-
     --事件组件
     self.comTime = self.com.comTime
 
@@ -29,18 +23,11 @@ local ret, msg = pcall(function()
     self.time = self.comTime:GetServerTime()
 
     --停止
-    self.isStop = false
+    self.isStop = nil
 
     if self.modelEntity:GetIsActor() then
         self.modelEntityActor = self.modelEntity
     end
-
-
-end)
-if not ret then
-    Log.Print(msg)
-end
-
 end
 
 
@@ -53,15 +40,10 @@ function M:LateUpdate()
     if not self.modelEntityActor:GetIsPlayer() then return end
 
 
-
     --不是处于我的控制中
     --local GetIsSelf = self.modelEntityActor:GetIsSelf()
     --Log.Print("2")
     --if not GetIsSelf then return end
-
-
-
-
 
     --时间
     local time_now = self.comTime:GetServerTime()

@@ -81,11 +81,8 @@ end
 
 function M:Walk(fCallback)
     if not fCallback then return end
-    --local cmdSceneEntityKey = {}
     for cmdEnumSceneEntity, tmX in pairs(self.tmTmX) do
         for id, x in pairs(tmX) do
-            --cmdSceneEntityKey.cmdEnumSceneEntity = cmdEnumSceneEntity
-            --cmdSceneEntityKey.id = id
             fCallback( x )
         end
     end
