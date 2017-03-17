@@ -123,23 +123,23 @@ function M:GetCmdSceneEntityKeySelf()
     end
 end
 
---遍历实体
-function M:Walk(fCallback)
+--遍历实体 cmdEnumSceneEntity 为空 则遍历全部
+function M:Walk(fCallback, cmdEnumSceneEntity)
     if not fCallback then return end
     self.coreModel:Walk(function(modelEntity)
         local viewEntity = self.coreView:GetViewEntity( modelEntity:GetCmdSceneEntityKey() )
         fCallback(viewEntity, modelEntity)
-    end)
+    end, cmdEnumSceneEntity)
 end
 
 --遍历实体View
-function M:WalkView(fCallback)
-    self.coreView:Walk( fCallback )
+function M:WalkView(fCallback, cmdEnumSceneEntity)
+    self.coreView:Walk( fCallback, cmdEnumSceneEntity )
 end
 
 --遍历实体Model
-function M:WalkModel(fCallback)
-    self.coreModel:Walk( fCallback )
+function M:WalkModel(fCallback, cmdEnumSceneEntity)
+    self.coreModel:Walk( fCallback, cmdEnumSceneEntity )
 end
 
 --打印当前全部

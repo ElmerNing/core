@@ -79,12 +79,20 @@ function M:Clear()
     self.tmTmX = {}
 end
 
-function M:Walk(fCallback)
+function M:Walk(fCallback, cmdEnumSceneEntity)
     if not fCallback then return end
-    for cmdEnumSceneEntity, tmX in pairs(self.tmTmX) do
+    local function WalkTmX(tmX)
         for id, x in pairs(tmX) do
             fCallback( x )
         end
+    end
+    if not cmdEnumSceneEntity then
+        for cmdEnumSceneEntity, tmX in pairs(self.tmTmX) do
+            WalkTmX(tmX)    
+        end
+    else
+        local tmX = self.tmTmX[cmdEnumSceneEntity]
+        if tmX then WalkTmX(tmX) end
     end
 end
 

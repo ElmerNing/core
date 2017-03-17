@@ -10,16 +10,31 @@ local M = class(..., SubBase)
 function M:ctor(...)
     M.super.ctor(self, ...)
     
-    
+    --entity组件
+    self.comEntity = self.com.comEntity
+
+    --目标entity的key
+    self.cmdSceneEntityKey_target = nil
     --self.nextSkill 
+    --self.skillRefId
 end
 
 function M:Update()
 
 end
 
-function M:PushSkill()
+function M:PushSkill(skillRefId)
+
 end
+
+
+--寻找目标
+function M:FindTarget()
+    
+
+    self
+end
+
 
 
 

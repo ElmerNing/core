@@ -13,6 +13,13 @@ local M = class(..., ComBaseWithSub)
 --构造函数
 function M:ctor(coreControl)
     M.super.ctor(self, coreControl, SubSkill)
+
+
+end
+
+
+--寻找目标
+function M:FindTarget()
     
 end
 
