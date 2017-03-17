@@ -43,12 +43,24 @@ function M:dispose()
 end
 
 --遍历
-function M:Walk(fCallback)
+function M:Walk(fCallback, cmdEnumSceneEntity)
     if not fCallback then return end
-    for _, meta in pairs(self.tmMeta) do
+    
+    local function WalkMeta(meta)
         local tmViewEntity = meta.tmViewEntity
         for id, viewEntity in pairs(meta.tmViewEntity) do
             fCallback(viewEntity)
+        end
+    end
+
+    if not cmdEnumSceneEntity then
+        for _, meta in pairs(self.tmMeta) do
+            WalkMeta(meta)   
+        end
+    else
+        local meta = self.tmMeta[cmdEnumSceneEntity]
+        if meta then
+            WalkMeta(meta)
         end
     end
 end

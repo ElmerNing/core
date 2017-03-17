@@ -51,12 +51,24 @@ function M:GetTmMeta()
 end
 
 --遍历
-function M:Walk(fCallback)
+function M:Walk(fCallback, cmdEnumSceneEntity)
     if not fCallback then return end
-    for _, meta in pairs(self.tmMeta) do
+    
+    local function WalkMeta(meta)
         local tmModelEntity = meta.tmModelEntity
         for id, modelEntity in pairs(tmModelEntity) do
             fCallback(modelEntity)
+        end
+    end
+
+    if not cmdEnumSceneEntity then
+        for _, meta in pairs(self.tmMeta) do
+            WalkMeta(meta)
+        end
+    else
+        local meta = self.tmMeta[cmdEnumSceneEntity]
+        if meta then
+            WalkMeta(meta)
         end
     end
 end

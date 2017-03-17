@@ -62,7 +62,7 @@ function M:LateUpdate()
 
     --长度
     local length = vec3_offset:SqrMagnitude()
-    local isStop = length > 1e-10
+    local isStop = length <= 1e-10
 
     --同步函数
     local function sync()

@@ -70,6 +70,10 @@ end
 
 --删除
 function M:Remove(cmdSceneEntityKey)
+
+    --分发事件
+    self.eventproxy:Brocast( "Remove", cmdSceneEntityKey )
+
     --数据
     self.coreModel:RemoveModelEntity(cmdSceneEntity)
     --界面
@@ -84,8 +88,7 @@ function M:Remove(cmdSceneEntityKey)
         end
     end
 
-    --分发事件
-    self.eventproxy:Brocast( "Remove", cmdSceneEntityKey )
+
 end
 
 --获取实体View

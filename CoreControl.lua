@@ -39,8 +39,16 @@ function M:ctor(playerId)
     --动画组件
     self.comAnimator = self:AddCom( "comAnimator", import(".Control.ComAnimator.ComAnimator", moduleName) )
 
+    --技能组件
+    self.comSkill = self:AddCom( "comSkill", import(".Control.ComSkill.ComSkill", moduleName)  )
+
+    --目标组件
+    self.comTarget = self:AddCom( "comTarget", import(".Control.ComTarget.ComTarget", moduleName)  )
+
     --同步组件 放到最后面
     self.comSync = self:AddCom( "comSync", import(".Control.ComSync.ComSync",moduleName) )
+
+
 
     --所有组件执行 init 初始化 函数 
     self:ComExcute("init")
@@ -67,16 +75,24 @@ end
 
 --添加组件
 function M:AddCom( name, class)
-    local com = class.new(self)
-    self.tlCom[ #self.tlCom + 1 ] = com
-    self.tmCom[name] = com
-    return com
-end
-
-function M:Update()
 
     local ret, msg = pcall(function() 
     
+        local com = class.new(self)
+        self.tlCom[ #self.tlCom + 1 ] = com
+        self.tmCom[name] = com
+        return com
+
+    end)
+    if not ret then
+        Log.Print(msg)
+    end
+    
+    return msg
+end
+
+function M:Update()
+    local ret, msg = pcall(function() 
         --销毁组件
         self:ComExcute("Update")
     end)
@@ -100,11 +116,19 @@ function M:LateUpdate()
     
 end
 
-function M:ComExcute(funcName, ...)
+function M:ComExcute(funcName)
     for _, com in ipairs(self.tlCom) do
         local func = com[funcName]
         if func then
-            func(com, ...)
+
+            local ret, msg = pcall(function() 
+                func(com)
+            end)
+            if not ret then
+                Log.Print(msg)
+            end
+            
+            
         end
     end
 end

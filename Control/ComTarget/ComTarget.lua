@@ -1,24 +1,27 @@
 -----------------------------------------------------------------------------------------------  
--- @description  管理同步相关
+-- @description  技能组件
 -- @author  ny
 -- @coryright  蜂鸟工作室
 -- @release  2017/11/30
 --------------------------------------------------------------------------------------------
 
 
-
 local ComBaseWithSub = import("..ComBaseWithSub")
-local SubSync = import(".SubSync")
+local SubTarget = import(".SubTarget")
 local M = class(..., ComBaseWithSub)
 
 --构造函数
 function M:ctor(coreControl)
-    M.super.ctor(self, coreControl, SubSync)
+
+    --只关心 player
+    M.super.ctor(self, coreControl, SubTarget)
+
 
 end
 
-function M:LateUpdate()
-     M.super.LateUpdate(self)   
+--寻找目标
+function M:FindTarget()
+    
 end
 
 

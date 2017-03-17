@@ -9,6 +9,9 @@ local ViewEntity = import(".ViewEntity")
 
 local M = class(..., ViewEntity)
 
+--碰撞类型
+local obstacleAvoidanceType = UnityEngine.AI.ObstacleAvoidanceType.NoObstacleAvoidance
+
 function M:ctor(modelEntity)
     M.super.ctor(self, modelEntity)
 
@@ -22,12 +25,10 @@ function M:ctor(modelEntity)
     navMeshAgent.stoppingDistance = 0
     navMeshAgent.acceleration = 99999
     navMeshAgent.angularSpeed = 99999
+    navMeshAgent.obstacleAvoidanceType = obstacleAvoidanceType
 
     --动画
     self.animator = nil
-
-    --动画的片段的时长, 单位s
-    self.tmAnimatorClipLength = nil
 
 end
 
@@ -48,9 +49,7 @@ end
 function M:OnEntityLoaded()
 
     self.animator = CsProxy.GetAnimator(self.go_entity)
-    if self.animator then
-        self.tmAnimatorClipLength = CsProxy.GetAnimatorClipLengthDic(self.animator)
-    end
+
 end
 
 function M:OnEntityUnloaded()

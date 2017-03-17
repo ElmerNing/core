@@ -7,8 +7,6 @@
 
 local M = class(...)
 
-local CameraManager = import(".Camera.CameraManager")
-M.CameraManager = CameraManager
 
 local CoreControl = import(".CoreControl")
 
@@ -18,7 +16,7 @@ function M.LoadScene(params, fCallback, fErrorCallback )
 
     local cmdPlayer = GameCacheMgr.GetCmdX("CmdPlayer")
 
-    Core.palyerId = cmdPlayer.playerId
+    Core.playerId = cmdPlayer.playerId
 
     --params 参数
     --local transferRefId = params.transferRefId or ""

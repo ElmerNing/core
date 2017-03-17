@@ -46,7 +46,7 @@ function M:Update()
 
         --事件索引过小 不处理
         if cmdSceneHost and cmdSceneHost.eventIndex >= objEvent.eventIndex then
-            func(self, cmdSceneEvent)
+            --func(self, cmdSceneEvent)
         else
             func(self, cmdSceneEvent)
         end
