@@ -113,9 +113,5 @@ function M:LateUpdate()
 
 end
 
---同步移动位置信息
-function M:SyncMove()
-
-end
 
 return M
