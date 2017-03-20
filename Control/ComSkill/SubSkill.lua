@@ -5,15 +5,20 @@
 -- @release  2017/11/30
 --------------------------------------------------------------------------------------------
 local SubBase = import("..SubBase")
+local M = class(..., SubBase)
 
+--配置表
 local RefSkill = RefMgr.RefSkill
 local RefAction = RefMgr.RefAction
 
-local M = class(..., SubBase)
+--辅助类
+local RequestEffect = import(".Other.RequestEffect")
+local RequestMove = import(".Other.RequestMove")
+
 
 function M:ctor(...)
     M.super.ctor(self, ...)
-    
+
     --下一个技能
     self.refSkill_next = nil
 
@@ -67,7 +72,6 @@ end
 --获取响应的SubAnimator
 function M:GetSubAnimator()
     local subAnimator = self.com.comAnimator:GetSub(self.cmdSceneEntityKey)
-
     return subAnimator
 end
 
@@ -94,6 +98,15 @@ end
 
 --协程中等待, 一直到fTrigger 返回true, 协程恢复
 function M:Wait(fTrigger)
+    local tlRet = { fTrigger() }
+
+    --成功触发
+    local ret = tlRet[1]
+    if ret then
+        return unpack(tlRet)
+    end
+
+    --等待触发
     self.trigger = fTrigger
     return self.cor:Yield()
 end
@@ -184,13 +197,23 @@ function M:PlayAction_cor(refAction)
     ---------------------------------
     --需要清空的资源
     ---------------------------------
+
+    --当前的refAction
     self.refAction = refAction
+
+    -- 所有需要dipose的对象
+    local tlIDispose = {}
 
     ---------------------------------
     --defer函数 释放以上申请的资源
     ---------------------------------
     local function defer() 
         self.refAction = nil
+
+        --调用对象的dispose方法
+        for _, idispose in ipairs(tlIDispose) do
+            idispose:dispose(idispose)
+        end
     end
 
     ---------------------------------
@@ -207,15 +230,31 @@ function M:PlayAction_cor(refAction)
     local time_start = self:GetTime()
 
 
-    
+    --播放所有技能
+    local tlFrame = refAction:GetTlFrame()
+
+    --播放所有帧事件
+    for _, frame in ipairs(tlFrame) do
+        --播放当前帧, 不会暂停协程, 返回action完成后, 需要清理的对象
+        local func = self[frame.name]
+        if func then
+            local tl = func(self, frame)
+            if tl then table.insertto( tlIDispose, tl )  end
+        end
+    end
+
     --等待动作播放完成
-    self:Wait( self:TriggerOfTime(time) )
+    local ret = self:Wait( self:TriggerOfTime(time, time_start) )
+    if not ret then
+        do defer() return ret end
+    end
 
     ---------------------------------
     --成功返回
     ---------------------------------
     do defer() return true end
 end
+
 
 --下个技能触发器
 function M:TriggerOfNextRefSkill()
@@ -250,6 +289,60 @@ function M:GetTime()
     local comTime = self.com.comTime
     return comTime:GetServerTime()
 end
+
+---------------------------------
+-- 各个帧事件
+---------------------------------
+
+--播放move, 需要Action播放完成后 销毁的对象
+function M:FrameMove(frame)
+    local refMoveFrameEvent = frame.ref
+    
+    local requestMove = RequestMove.new(self, refMoveFrameEvent)
+
+
+    return {requestMove}
+end
+
+--攻击帧
+function M:FrameAttack(frame)
+
+end
+
+--特效帧
+function M:FrameEffect(frame)
+    local refEffectFrameEvent = frame.ref
+
+    local time = refEffectFrameEvent:GetTime()
+
+    local viewEntity = self.viewEntity
+    local requestEffect = RequestEffect.new(refEffectFrameEvent.effect, function(go, transform)
+        local transform_parent = viewEntity:FindTransform(refEffectFrameEvent.hangingPoint)
+        if transform_parent then
+            transform.parent = transform_parent
+            transform.localPosition=refEffectFrameEvent:GetLocalPosition()
+            transform.localEulerAngles=refEffectFrameEvent:GetRotation()
+        end
+    end)
+
+    if refEffectFrameEvent:GetIsLoop()then
+        --循环特效, 直接返回effect的IDipose action结束的时候销毁
+        return {requestEffect}
+    else
+        --设置effect的生命
+        Timer.New(function ()
+            requestEffect:dispose()
+            requestEffect = nil
+        end, refEffectFrameEvent:GetTime(), 1):Start()
+
+        --持续一段时间
+        return nil
+    end
+end
+
+
+
+
 
 
 

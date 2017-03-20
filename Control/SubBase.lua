@@ -6,6 +6,16 @@ function M:ctor(com, viewEntity, modelEntity)
     self.viewEntity = viewEntity
     self.modelEntity = modelEntity
     self.cmdSceneEntityKey = modelEntity:GetCmdSceneEntityKey()
+
+    self.isDisposed = false
+end
+
+function M:GetViewEntity()
+    return self.viewEntity
+end
+
+function M:GetModelEntity()
+    return self.modelEntity
 end
 
 function M:GetIsSelf()
@@ -13,6 +23,7 @@ function M:GetIsSelf()
 end
 
 function M:dispose()
+    self.isDisposed = true
 end
 
 function M:Update()

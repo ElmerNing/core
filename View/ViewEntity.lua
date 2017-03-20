@@ -16,8 +16,8 @@ function M:ctor(modelEntity)
     --挂接的go
     self.go_parent = GameObject.New()
     self.transform_parent = self.go_parent.transform
-
     self.go_parent.name = self:GetHierachyName()
+
 
     --设置为非激活
     self.go_parent:SetActive(false)
@@ -48,6 +48,40 @@ function M:dispose()
     M:UnloadEntity()
     GameObject.Destroy( self.go_parent )
 end
+
+
+function M:FindTransform(name)
+
+    local GetTransformByName = nil
+    function GetTransformByName(transform_parent,childName)  
+        local transform_child = child(transform_parent, childName)
+        if transform_child then return transform_child end
+
+        for i=0,transform_parent.childCount-1 do
+            local transform_child = GetTransformByName(transform_parent:GetChild(i),childName);
+            if transform_child then
+                return transform_child
+            end
+        end
+        return nil
+    end
+
+
+    if name ~= "" then
+        return GetTransformByName(self.transform_parent, name)
+    end
+
+    return self.transform_parent
+end
+
+function M:GetGo()
+    return self.go_parent
+end
+
+function M:GetTransform()
+    return self.transform_parent
+end
+
 
 function M:GetPosition()
     return self.transform_parent.position

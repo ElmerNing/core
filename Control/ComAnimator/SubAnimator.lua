@@ -119,7 +119,7 @@ function M:LateUpdate()
 
     --判断逻辑
     local navMeshRender = viewEntityActor:GetNavMeshAgent()
-    if navMeshRender.hasPath then
+    if navMeshRender.velocity.sqrMagnitude > 2 then
         self:SetState(animator, "run")
     else
         self:SetState(animator, "stand")
