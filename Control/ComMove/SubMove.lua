@@ -32,7 +32,7 @@ function M:MoveDir(vec3_dir)
     local vec3_offset = vec3_dir * (speed * self.com.comTime:GetDeltaTime() * 3)
     local vec3_target = vec3_orig + vec3_offset
 
-    navMeshAgent:Resume()
+    --navMeshAgent:Resume()
     navMeshAgent:SetDestination(vec3_target)
 end
 
@@ -41,7 +41,7 @@ function M:MoveTo(vec3_pos)
     local viewEntity = self.viewEntity
     local modelEntity = self.modelEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
-    navMeshAgent:Resume()
+    --navMeshAgent:Resume()
     navMeshAgent:SetDestination(vec3_pos)
 end
 
@@ -52,7 +52,8 @@ function M:MoveToImmediately( vec3_pos, rotate)
     local navMeshAgent = viewEntity:GetNavMeshAgent()
     local vec3_orig = viewEntity:GetPosition()
     local vec3_offset = vec3_pos - vec3_orig
-    navMeshAgent:Stop()
+    --navMeshAgent:Stop()
+    navMeshAgent:ResetPath()
     navMeshAgent:Move(vec3_offset)
     --转向
     if rotate then
@@ -64,7 +65,7 @@ end
 function M:MoveStop()
     local viewEntity = self.viewEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
-    navMeshAgent = navMeshAgent:Stop()
+    navMeshAgent = navMeshAgent:ResetPath()
 end
 
 --获取位置

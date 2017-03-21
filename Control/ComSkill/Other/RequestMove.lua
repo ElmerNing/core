@@ -31,7 +31,6 @@ function M:ctor( subSkill, refMoveFrameEvent)
     local vec3_offset = transform_local:TransformDirection(refMoveFrameEvent:GetOffset())
     self.vec3_offset = vec3_offset
 
-    Log.Dump(self.vec3_offset)
 
     --开始时间
     self.time_start = subSkill:GetTime()
@@ -39,14 +38,14 @@ function M:ctor( subSkill, refMoveFrameEvent)
     --持续时间
     self.time = refMoveFrameEvent:GetTime()
 
-    Log.Print("start")
+    --停止移动
+    self.subMove:MoveStop()
 
     --更新
     UpdateBeat:Add(self.Update, self)
 end
 
 function M:dispose()
-    Log.Print("stop")
     UpdateBeat:Remove(self.Update, self)
     self.fCallback = nil
 end
@@ -65,14 +64,10 @@ function M:Update()
 
     local vec3_target = self.vec3_orig + (self.vec3_offset * rate) 
 
-    Log.Print(vec3_target.x, vec3_target.y, vec3_target.z)
-
     --判断target位置是否合法
-    self.subMove:MoveToImmediately(vec3_target, true)
-end
+    self.viewEntity:SetPosition(vec3_target)
 
-function M:GetPosition()
+    
 end
-
 
 return M

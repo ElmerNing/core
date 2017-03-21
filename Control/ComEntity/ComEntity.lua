@@ -93,14 +93,14 @@ end
 
 --获取实体View
 function M:GetView(cmdSceneEntityKey)
-    local viewEntity = self.coreView:GetModelEntity(cmdSceneEntityKey)
+    local viewEntity = self.coreView:GetViewEntity(cmdSceneEntityKey)
     return viewEntity
 end
 
 --获取实体Model
 function M:GetModel(cmdSceneEntityKey)
-    local viewEntity = self.coreModel:GetModelEntity(cmdSceneEntityKey)
-    return viewEntity 
+    local modelEntity = self.coreModel:GetModelEntity(cmdSceneEntityKey)
+    return modelEntity 
 end
 
 --获取自身

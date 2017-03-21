@@ -45,10 +45,16 @@ function M:ctor(playerId)
     --目标组件
     self.comTarget = self:AddCom( "comTarget", import(".Control.ComTarget.ComTarget", moduleName)  )
 
+    --帮助函数
+    self.comHelper = self:AddCom( "comHelper", import(".Control.ComHelper.ComHelper", moduleName)  )
+
+    --帮助函数
+    self.comEffect = self:AddCom( "comEffect", import(".Control.ComEffect.ComEffect", moduleName)  )
+
     --同步组件 放到最后面
     self.comSync = self:AddCom( "comSync", import(".Control.ComSync.ComSync",moduleName) )
 
-
+    
 
     --所有组件执行 init 初始化 函数 
     self:ComExcute("init")

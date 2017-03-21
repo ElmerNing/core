@@ -18,6 +18,10 @@ function M:GetModelEntity()
     return self.modelEntity
 end
 
+function M:GetCmdSceneEntityKey()
+    return self.cmdSceneEntityKey
+end
+
 function M:GetIsSelf()
     return self.modelEntity:GetId() == Core.GetPlayerId()
 end

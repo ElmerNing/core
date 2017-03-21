@@ -14,6 +14,7 @@ local RefAction = RefMgr.RefAction
 --辅助类
 local RequestEffect = import(".Other.RequestEffect")
 local RequestMove = import(".Other.RequestMove")
+local RequestAttack = import(".Other.RequestAttack")
 
 
 function M:ctor(...)
@@ -306,38 +307,41 @@ end
 
 --攻击帧
 function M:FrameAttack(frame)
+    local refAttackFrameEvent = frame.ref
 
+    local requestAttack = RequestAttack.new(self, refAttackFrameEvent)
+
+    return {requestAttack}
 end
 
 --特效帧
 function M:FrameEffect(frame)
+
+    --数据
+    local comEffect = self.com.comEffect
     local refEffectFrameEvent = frame.ref
 
+    --特效时间
     local time = refEffectFrameEvent:GetTime()
+    if refEffectFrameEvent:GetIsLoop() then
+        time = nil -- time nil则无限循环
+    end
 
-    local viewEntity = self.viewEntity
-    local requestEffect = RequestEffect.new(refEffectFrameEvent.effect, function(go, transform)
-        local transform_parent = viewEntity:FindTransform(refEffectFrameEvent.hangingPoint)
-        if transform_parent then
-            transform.parent = transform_parent
+    --添加特效
+    local requestEffect = comEffect:AddEffect(
+        self:GetCmdSceneEntityKey(),
+        refEffectFrameEvent.effect, 
+        refEffectFrameEvent.hangingPoint, time, 
+        function(go, transform)
             transform.localPosition=refEffectFrameEvent:GetLocalPosition()
             transform.localEulerAngles=refEffectFrameEvent:GetRotation()
         end
-    end)
+    )
 
-    if refEffectFrameEvent:GetIsLoop()then
-        --循环特效, 直接返回effect的IDipose action结束的时候销毁
-        return {requestEffect}
-    else
-        --设置effect的生命
-        Timer.New(function ()
-            requestEffect:dispose()
-            requestEffect = nil
-        end, refEffectFrameEvent:GetTime(), 1):Start()
-
-        --持续一段时间
-        return nil
-    end
+    --如果是无限循环
+    if time == nil then
+        return {requestEffect} 
+    end  
 end
 
 
