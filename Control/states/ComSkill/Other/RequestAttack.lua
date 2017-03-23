@@ -53,9 +53,12 @@ function M:ctor(subSkill, attackEventIndex, actionRefId, refAttackFrameEvent)
     ---------------------------------
     --播放受击动画, 这部分需要考虑状态切换 to do
     --local comAnimator = subSkill.com.comAnimator
-    --for _, key in pairs(tmCmdSceneEntityKey) do
-    --    comAnimator:Play(key, "hit")
-    --end
+    for _, key in pairs(tmCmdSceneEntityKey) do
+        
+        --播放受击动画
+        local subHit = self.comEntity:GetSub(key, "comHit")
+        subHit:PlayHit(cmdSceneEntityKey, refAttackFrameEvent)
+    end
 
 
     ---------------------------------

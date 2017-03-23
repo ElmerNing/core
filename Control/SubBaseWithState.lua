@@ -83,6 +83,12 @@ function M:Resume(...)
 end
 
 
+--获取当前状态是否正在运行
+function M:GetIsRunning()
+    local subStateMgr = self:GetSubStateMgr()
+    return self == subStateMgr:GetSubStateBase()
+end
+
 ---------------------------------
 --以下是子类需要继承的方法
 ---------------------------------

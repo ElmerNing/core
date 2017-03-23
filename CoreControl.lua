@@ -40,20 +40,34 @@ function M:ctor(playerId)
     --动画组件
     self.comAnimator = self:AddCom( "comAnimator", import(".Control.ComAnimator.ComAnimator", moduleName) )
 
-    --技能组件
-    self.comSkill = self:AddCom( "comSkill", import(".Control.ComSkill.ComSkill", moduleName)  )
-
-    --目标组件
+    --目标寻找组件
     self.comTarget = self:AddCom( "comTarget", import(".Control.ComTarget.ComTarget", moduleName)  )
 
-    --帮助函数
+    --帮助函数组件
     self.comHelper = self:AddCom( "comHelper", import(".Control.ComHelper.ComHelper", moduleName)  )
 
-    --帮助函数
+    --特效组件
     self.comEffect = self:AddCom( "comEffect", import(".Control.ComEffect.ComEffect", moduleName)  )
 
-    --状态管理
+    --状态管理组件
     self.comStateMgr = self:AddCom( "comStateMgr", import(".Control.ComStateMgr.ComStateMgr", moduleName)  )
+
+        ---------------------------------
+        -- 若干状态
+        ---------------------------------
+        --技能状态组件
+        self.comSkill = self:AddCom( "comSkill", import(".Control.states.ComSkill.ComSkill", moduleName)  )
+
+        --受击状态组件
+        self.comHit = self:AddCom( "comHit", import(".Control.states.ComHit.ComHit", moduleName)  )
+
+        --空闲状态组件
+        self.comIdle = self:AddCom( "comIdle", import(".Control.states.ComIdle.ComIdle", moduleName)  )        
+
+
+
+
+
 
     --同步组件 放到最后面
     self.comSync = self:AddCom( "comSync", import(".Control.ComSync.ComSync",moduleName) )
@@ -100,6 +114,10 @@ function M:AddCom( name, class)
     end
     
     return msg
+end
+
+function M:GetCom(name)
+    return self.tmCom[name]
 end
 
 function M:Update()

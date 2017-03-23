@@ -4,11 +4,9 @@
 -- @coryright  蜂鸟工作室
 -- @release  2017/11/30
 --------------------------------------------------------------------------------------------
-local SubBaseWithState = import("..SubBaseWithState")
+local SubBaseWithState = import("...SubBaseWithState")
 
 local M = class(..., SubBaseWithState)
-
-
 
 
 --配置表
@@ -21,25 +19,22 @@ local RequestAttack = import(".Other.RequestAttack")
 
 
 function M:ctor(...)
-    --M.super.ctor(self, ...)
-
-
-    local tl = {...}
-
-    local ret, msg = pcall(function() 
-        M.super.ctor(self, unpack(tl))    
-    end)
-    if not ret then
-        Log.Print(msg)
-    end
-    
+    M.super.ctor(self, ...) 
 end
 
 --压入一个技能, 
 function M:PushSkill(skillRefId)
-    local refSkill = RefSkill.GetRef{
-        refId = skillRefId
-    }
+
+    local skillRefId_pre = nil
+    
+    --如果实在运行, 获取下
+    if self:GetIsRunning() then 
+        skillRefId_pre = self.refSkill.refId
+    end
+
+    --获取下一帧
+    local refSkill = RefSkill.GetNextRefSkill(skillRefId, skillRefId_pre)
+
     self:Resume(refSkill)
 end
 

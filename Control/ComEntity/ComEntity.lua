@@ -103,6 +103,12 @@ function M:GetModel(cmdSceneEntityKey)
     return modelEntity 
 end
 
+--获取实体的sub
+function M:GetSub(cmdSceneEntityKey, comName)
+    local com = self.coreControl:GetCom(comName)
+    return com:GetSub(cmdSceneEntityKey)
+end
+
 --获取自身
 function M:GetSelf()
     return self.viewEntityPlayer_self, self.modelEntityPlayer_self

@@ -47,7 +47,7 @@ end
 
 --返回播放时间
 --返回空 代表播放失败
-function M:Play(stateName)
+function M:Play(stateName,  reset)
 
     --animator是否加载完成
     local animator = self:GetAnimator()
@@ -57,7 +57,7 @@ function M:Play(stateName)
     local time = self:GetTime(stateName)
     if not time then return end
     
-    self:SetState(animator, stateName, true)
+    self:SetState(animator, stateName, reset)
 
     --返回播放时间
     return time
@@ -107,6 +107,7 @@ end
 function M:LateUpdate()
     
     --不是自由
+    --[[
     if not self.isAuto then return end
 
     --animator
@@ -121,6 +122,7 @@ function M:LateUpdate()
     else
         self:SetState(animator, "stand")
     end 
+    ]]
 end
 
 

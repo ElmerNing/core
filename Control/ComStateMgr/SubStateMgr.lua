@@ -27,12 +27,12 @@ function M:ctor(...)
     self.tlParam_next = {}
 
     --开启一个协程, 所有的subStateBase的Main都运行于此协程中
-    coroutine.start(function()
+    coroutine.wrap(function()
         
         self.cor = CorUtil.new()
         self:Loop_cor()
 
-    end)
+    end)()
 end
 
 function M:dispose()
@@ -58,6 +58,11 @@ function M:Update()
     end
 end
 
+--获取当前的sub状态
+function M:GetSubStateBase()
+    return self.subStateBase
+end
+
 --主循环
 function M:Loop_cor()
 
@@ -75,6 +80,9 @@ function M:Loop_cor()
         self:Main_cor()
         --等下一帧
         self:Wait_cor( triggerOfNextFrame() )
+
+        --如果被销毁了 直接停止
+        if self.isDisposed then return end
     end
 end
 
