@@ -19,9 +19,9 @@ function M:ctor(coreControl)
 
 end
 
---寻找目标
-function M:FindTarget()
-    
+function M:GetTarget(cmdSceneEntityKey)
+    local subTarget = self:GetSub(cmdSceneEntityKey)
+    return subTarget:GetTarget()
 end
 
 

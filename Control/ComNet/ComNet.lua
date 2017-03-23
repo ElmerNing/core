@@ -18,4 +18,14 @@ function M:SendCmdSceneMoveEvent(cmdSceneMoveEvent, fCallback)
     Network.Send2("CmdSceneMove", {cmdSceneMoveEvent = cmdSceneMoveEvent}, fCallback)
 end
 
+--attackEvent
+function M:SendCmdSceneAttackEvent(cmdSceneAttackEvent, fCallback)
+    Network.Send2("CmdSceneAttack", {cmdSceneAttackEvent = cmdSceneAttackEvent}, fCallback)
+end
+
+--
+function M:SendCmdSceneAttackEffectEvent(cmdSceneAttackEffectEvent, fCallback)
+    Network.Send2("CmdSceneAttackEffect", {cmdSceneAttackEffectEvent = cmdSceneAttackEffectEvent}, fCallback)
+end
+
 return M

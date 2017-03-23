@@ -12,19 +12,13 @@ local M = class(..., ComBaseWithSub)
 
 --构造函数
 function M:ctor(coreControl)
-
     --只关心 player
     M.super.ctor(self, coreControl, SubSkill, {
         SceneEntity_Player = "SceneEntity_Player"
     })
 
-
 end
 
---寻找目标
-function M:FindTarget()
-    
-end
 
 
 return M

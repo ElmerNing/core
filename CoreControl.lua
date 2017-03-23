@@ -12,6 +12,7 @@ local M = class(...)
 --创建
 function M:ctor(playerId)
 
+
     self.playerId = playerId
 
     self.tlCom = {}
@@ -51,6 +52,9 @@ function M:ctor(playerId)
     --帮助函数
     self.comEffect = self:AddCom( "comEffect", import(".Control.ComEffect.ComEffect", moduleName)  )
 
+    --状态管理
+    self.comStateMgr = self:AddCom( "comStateMgr", import(".Control.ComStateMgr.ComStateMgr", moduleName)  )
+
     --同步组件 放到最后面
     self.comSync = self:AddCom( "comSync", import(".Control.ComSync.ComSync",moduleName) )
 
@@ -62,6 +66,7 @@ function M:ctor(playerId)
     --Update 和 lateUpdate
     UpdateBeat:Add(self.Update, self)
     LateUpdateBeat:Add(self.LateUpdate, self)
+
 end
 
 

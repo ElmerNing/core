@@ -8,39 +8,96 @@
 local M = class(...)
 
 
-function M:ctor(subSkill, refAttackFrameEvent)
-       
+function M:ctor(subSkill, attackEventIndex, actionRefId, refAttackFrameEvent)
+    
+
+
+
+
+
+    --储存一些变量方便计算
     self.viewEntity = subSkill:GetViewEntity()
+    self.modelEntity = subSkill:GetModelEntity()
     self.comEntity = subSkill.com.comEntity
 
+    --自身
     local cmdSceneEntityKey = subSkill:GetCmdSceneEntityKey()
 
+    --获取目标类型
     local subTarget = subSkill.com.comTarget:GetSub(cmdSceneEntityKey)
+    local tlCmdEnumSceneEntity, isIncludeSelf = self:GetTlCmdEnumSceneEntity(refAttackFrameEvent.targetType)
 
+    --快速搜索附近,获取潜在的目标列表
+    local tlCmdSceneEntityKey  = subTarget:SearchTlTargetByEnum(tlCmdEnumSceneEntity)
 
-    --获取相关类型
-    local tlCmdEnumSceneEntity = self:GetTlCmdEnumSceneEntity(refAttackFrameEvent.targetType)
-
-    --预先搜索附近
-    local tlCmdSceneEntityKey, isIncludeSelf = subTarget:SearchTlTargetByEnum(tlCmdEnumSceneEntity)
-
-    --如果包括自己
+    --目标包括自己则加入自己
     if isIncludeSelf then
         tlCmdSceneEntityKey[#tlCmdSceneEntityKey+1] = cmdSceneEntityKey
-    end  
+    end    
 
-    --转换为tm
+    --通过攻击范围进行过滤
     local tmCmdSceneEntityKey = tlCmdSceneEntityKey
-
-    --通过攻击范围内,进行过滤
     self:FiltByArea(tmCmdSceneEntityKey, refAttackFrameEvent:GetArea() )
    
 
-end
+
+    ---------------------------------
+    --攻击到的目标
+    ---------------------------------
+    self.tmCmdSceneEntityKey = tmCmdSceneEntityKey
+
+    --Log.Dump(self.tmCmdSceneEntityKey)
+
+    ---------------------------------
+    --受击动画
+    ---------------------------------
+    --播放受击动画, 这部分需要考虑状态切换 to do
+    --local comAnimator = subSkill.com.comAnimator
+    --for _, key in pairs(tmCmdSceneEntityKey) do
+    --    comAnimator:Play(key, "hit")
+    --end
+
+
+    ---------------------------------
+    -- buff
+    ---------------------------------
+
+    -- todo
+
+    ---------------------------------
+    --计算伤害
+    ---------------------------------
+    local tlCmdSceneAttackDamageEffect = {}
+    for _, cmdSceneEntityKey in ipairs(tmCmdSceneEntityKey) do        
+        local cmd = self:ComputeCmdSceneAttackDamageEffect(cmdSceneEntityKey)
+        tlCmdSceneAttackDamageEffect[#tlCmdSceneAttackDamageEffect+1] = cmd
+    end
+
+    ---------------------------------
+    --同步数据
+    ---------------------------------
+    local modelEntity = self.modelEntity
+    local cmdSceneHost= modelEntity:GetCmd("CmdSceneHost")
+    if cmdSceneHost and cmdSceneHost:GetIsMyHost() and #tlCmdSceneAttackDamageEffect > 0 then
+        local cmdSceneAttackEffectEvent = {
+            cmdSceneEntityKey_attack            = modelEntity:GetCmdSceneEntityKey(),
+            cmdSceneHost                        = modelEntity.cmdSceneHost:NextCmdHost(),
+            attackEventIndex                    = attackEventIndex,
+            actionRefId                         = actionRefId,
+            frameRefId                          = refAttackFrameEvent.refId,
+            tlCmdSceneAttackDamageEffect        = tlCmdSceneAttackDamageEffect,
+        }
+        subSkill.com.comNet:SendCmdSceneAttackEffectEvent(cmdSceneAttackEffectEvent)
+    end
+end 
 
 function M:dispose()
 end
 
+--是否有击中
+function M:GetIsHit()
+    return next(self.tmCmdSceneEntityKey) ~= nil
+end
 
 --targetType 1:敌方 2:友方 3:自己 4:自己加友方 5:全体
 function M:GetTlCmdEnumSceneEntity(targetType)
@@ -48,8 +105,6 @@ function M:GetTlCmdEnumSceneEntity(targetType)
         "SceneEntity_Monster"
     }, false
 end
-
-
 
 --通过攻击范围内,进行过滤
 function M:FiltByArea(tmCmdSceneEntityKey, area)
@@ -70,10 +125,9 @@ function M:FiltByArea(tmCmdSceneEntityKey, area)
         if not ret then tmCmdSceneEntityKey[key] = nil end
     end
 
-    Log.Dump(tmCmdSceneEntityKey)
-
 end
 
+--转换到本地坐标系
 function M:GetLocalPosition(cmdSceneEntityKey)
 
     --attacker
@@ -88,6 +142,7 @@ function M:GetLocalPosition(cmdSceneEntityKey)
     return vec3_target
 end
 
+--获取是否在圆形area内
 function M:GetIsInCircle(cmdSceneEntityKey, area)
     
     --获取目标的本地坐标系
@@ -112,6 +167,7 @@ function M:GetIsInCircle(cmdSceneEntityKey, area)
     return true
 end
 
+--获取是否在扇形area内
 function M:GetIsInSector(cmdSceneEntityKey, area)
 
     local function Print(...)
@@ -150,6 +206,7 @@ function M:GetIsInSector(cmdSceneEntityKey, area)
     return true
 end
 
+--获取是否在矩形area内
 function M:GetIsInRect(cmdSceneEntityKey, area)
     --获取目标的本地坐标系
     local vec3 = self:GetLocalPosition(cmdSceneEntityKey)
@@ -173,6 +230,31 @@ function M:GetIsInRect(cmdSceneEntityKey, area)
     end
 
     return true
+end
+
+--计算伤害
+function M:ComputeCmdSceneAttackDamageEffect(cmdSceneEntityKey_target)
+
+    local modelEntity_target = self.comEntity:GetModel(cmdSceneEntityKey_target)
+    local modelEntity_attack = self.modelEntity
+
+
+    local cmdBattleProperty_attack = modelEntity_attack:GetCmd("CmdSceneEntityBattleProperty")
+    local cmdBattleProperty_target = modelEntity_target:GetCmd("CmdSceneEntityBattleProperty")
+
+
+    ---------------------------------
+    --各种伤害计算 to do
+    ---------------------------------
+
+    --返回伤害
+    local cmdSceneAttackDamageEffect = {
+        cmdSceneEntityKey = modelEntity_target:GetCmdSceneEntityKey(),
+        cmdEnumSceneAttackEffect = "SceneAttackEffect_Damage",
+        number = 10,
+    }
+
+    return cmdSceneAttackDamageEffect
 end
 
 return M

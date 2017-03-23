@@ -32,18 +32,10 @@ function M:init()
     local eventproxy = comEntity:GetEventProxy()
     self.eventHandle_add = eventproxy:AddListener("Add", function(viewEntity, modelEntity)
 
-        local cmdEnumSceneEntity = modelEntity:GetCmdEnumSceneEntity()
-        local tmCmdEnumSceneEntity = self.tmCmdEnumSceneEntity
-
-        --如果不关心该类型
-        if tmCmdEnumSceneEntity and not tmCmdEnumSceneEntity[cmdEnumSceneEntity] then
-            return
-        end
-
-        self:SetSub( modelEntity:GetCmdSceneEntityKey(), self.subClass.new(self, viewEntity, modelEntity) )
+        self:OnAdd(viewEntity, modelEntity)
     end)
     self.eventHandle_remove = eventproxy:AddListener("Remove", function(cmdSceneEntityKey) 
-        self:SetSub(cmdSceneEntityKey, nil)
+        self:OnRemove(cmdSceneEntityKey)
     end)
 end
 
@@ -56,6 +48,22 @@ function M:dispose()
     self:Walk(function(sub)
         sub:dispose()
     end)
+end
+
+function M:OnAdd(viewEntity, modelEntity)
+    local cmdEnumSceneEntity = modelEntity:GetCmdEnumSceneEntity()
+    local tmCmdEnumSceneEntity = self.tmCmdEnumSceneEntity
+
+    --如果不关心该类型
+    if tmCmdEnumSceneEntity and not tmCmdEnumSceneEntity[cmdEnumSceneEntity] then
+        return
+    end
+
+    self:SetSub( modelEntity:GetCmdSceneEntityKey(), self.subClass.new(self, viewEntity, modelEntity) )
+end
+
+function M:OnRemove(cmdSceneEntityKey)
+    self:SetSub(cmdSceneEntityKey, nil)
 end
 
 function M:Update()

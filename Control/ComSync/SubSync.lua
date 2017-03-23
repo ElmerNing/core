@@ -28,6 +28,8 @@ function M:ctor(...)
     if self.modelEntity:GetIsActor() then
         self.modelEntityActor = self.modelEntity
     end
+
+    self.cmdSceneHost = self.modelEntityActor:GetCmd("CmdSceneHost")
 end
 
 
@@ -36,14 +38,10 @@ function M:LateUpdate()
     --不是actor
     if not self.modelEntityActor then return end
 
-    --不是player
-    if not self.modelEntityActor:GetIsPlayer() then return end
-
-
-    --不是处于我的控制中
-    --local GetIsSelf = self.modelEntityActor:GetIsSelf()
-    --Log.Print("2")
-    --if not GetIsSelf then return end
+    local cmdSceneHost = self.modelEntityActor:GetCmd("CmdSceneHost")
+    if (not cmdSceneHost) or not cmdSceneHost:GetIsMyHost() then
+        return
+    end
 
     --时间
     local time_now = self.comTime:GetServerTime()

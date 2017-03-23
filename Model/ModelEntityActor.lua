@@ -10,6 +10,7 @@ local ModelEntity = import(".ModelEntity")
 local CmdScenePosition = import(".Cmd.CmdScenePosition")
 local CmdSceneMove = import(".Cmd.CmdSceneMove")
 local CmdSceneHost = import(".Cmd.CmdSceneHost")
+local CmdSceneEntityBattleProperty = import(".Cmd.CmdSceneEntityBattleProperty")
 
 local M = class(..., ModelEntity)
 
@@ -21,6 +22,10 @@ function M:ctor(cmdSceneEntity)
     self.cmdScenePosition = self:AddCmd( CmdScenePosition.new(cmdSceneEntity.cmdScenePosition) )
     self.cmdSceneMove = self:AddCmd( CmdSceneMove.new(cmdSceneEntity.cmdSceneMove) )
     
+    --战斗属性
+    self.cmdSceneEntityBattleProperty = self:AddCmd( 
+        CmdSceneEntityBattleProperty.new( cmdSceneEntity.cmdSceneEntityBattleProperty ) 
+    )
 end
 
 function M:GetIsMyHost()
@@ -32,7 +37,7 @@ function M:dispose()
 end
 
 function M:GetMoveSpeed()
-    return 15
+    return 12
 end
     
 

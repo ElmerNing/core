@@ -23,8 +23,7 @@ function M:ctor(...)
     --动画时间
     self.tmTime = nil
 
-    
-
+    self.stateName = nil
 end
 
 function M:SetIsAuto(isAuto)
@@ -33,24 +32,22 @@ end
 
 function M:SetState(animator, stateName, reset)
 
-    local state_org = animator:GetInteger("State")
-    local state_new = UnityEngine.Animator.StringToHash(string.lower(stateName))
-
-    if state_org ~= state_new then
-        animator:SetInteger("State", state_new)
+    if self.stateName == stateName then
+        if reset then
+            animator:Play(stateName, -1, 0)
+        end
         return
     end
 
-    if reset then
-        animator:Play(state_new, -1, 0)
-    end
+    animator:SetBool(self.stateName, false)
+    animator:SetBool(stateName, true)
+    self.stateName = stateName
+
 end
 
 --返回播放时间
 --返回空 代表播放失败
 function M:Play(stateName)
-
-    
 
     --animator是否加载完成
     local animator = self:GetAnimator()
@@ -60,25 +57,25 @@ function M:Play(stateName)
     local time = self:GetTime(stateName)
     if not time then return end
     
-    --播放
-    --self:SetState(animator, stateName, true)
-
-    local state_org = animator:GetInteger("State")
-    local state_new = UnityEngine.Animator.StringToHash(string.lower(stateName))
-
-    if state_org ~= state_new then
-        animator:SetInteger("State", state_new) 
-    end
-
-    animator:Play(state_new, -1, 0)
-
-    --需要起始时间 fuck 不知道怎么实现
-    --if not normalizedTime then
-    --animator:Play(state, -1, )
-    --end
+    self:SetState(animator, stateName, true)
 
     --返回播放时间
     return time
+end
+
+function M:Pause()
+    self:SetSpeed(0)
+end
+
+function M:Resume()
+    self:SetSpeed(1)
+end
+
+function M:SetSpeed(speed)
+    local animator = self:GetAnimator()
+    if animator then
+        animator.speed = speed
+    end 
 end
 
 function M:GetTmTime()

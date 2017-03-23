@@ -34,8 +34,6 @@ function M:Update()
     local modelEntity = self.modelEntity
     local cmdSceneHost = modelEntity:GetCmd("CmdSceneHost")
 
-
-
     --处理事件
     for _, objEvent in ipairs(tlObjEvent) do
         local protoName = objEvent.protoName
@@ -51,7 +49,6 @@ function M:Update()
             func(self, cmdSceneEvent)
         end
     end
-
 end
 
 function M:AddObjEvent(objEvent)
