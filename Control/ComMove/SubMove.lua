@@ -11,6 +11,19 @@ function M:ctor(...)
     M.super.ctor(self, ...)
 end
 
+--判断是否可以移动
+function M:GetIsCanMove()
+
+    local subStateMgr = self:GetSub("comStateMgr")
+    local subStateBase = subStateMgr:GetSubStateBase()
+    local stateName = subStateBase:GetName()
+
+    --空闲状态下可以移动
+    if stateName == "SubIdle" then
+        return true
+    end
+end
+
 function M:IsMove()
     local viewEntity = self.viewEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
@@ -18,7 +31,11 @@ function M:IsMove()
 end
 
 --往某方向移动
-function M:MoveDir(vec3_dir)
+function M:MoveDir(vec3_dir, isForce)
+
+
+    if not isForce and not self:GetIsCanMove() then return false end
+
     local viewEntity = self.viewEntity
     local modelEntity = self.modelEntity
 
@@ -34,19 +51,27 @@ function M:MoveDir(vec3_dir)
 
     --navMeshAgent:Resume()
     navMeshAgent:SetDestination(vec3_target)
+
+    return true
 end
 
 --移动到某一个位置
-function M:MoveTo(vec3_pos)
+function M:MoveTo(vec3_pos, isForce)
+    if not isForce and not self:GetIsCanMove() then return false end
+
     local viewEntity = self.viewEntity
     local modelEntity = self.modelEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
     --navMeshAgent:Resume()
     navMeshAgent:SetDestination(vec3_pos)
+
+    return true
 end
 
 --瞬间移动到某一位置
-function M:MoveToImmediately( vec3_pos, rotate)
+function M:MoveToImmediately( vec3_pos, rotate, isForce)
+    if not isForce and not self:GetIsCanMove() then return false end
+
     local viewEntity = self.viewEntity
     local modelEntity = self.modelEntity
     local navMeshAgent = viewEntity:GetNavMeshAgent()
@@ -59,6 +84,8 @@ function M:MoveToImmediately( vec3_pos, rotate)
     if rotate then
         viewEntity:LookAt(vec3_pos)
     end
+
+    return true
 end
 
 --停止移动
@@ -68,13 +95,5 @@ function M:MoveStop()
     navMeshAgent = navMeshAgent:ResetPath()
 end
 
---获取位置
-function M:GetPosition()
-    local viewEntity = self.viewEntity
-    
-    local speed = modelEntity:GetMoveSpeed()
-    local vec3_orig = viewEntity:GetPosition()
-    return
-end
 
 return M

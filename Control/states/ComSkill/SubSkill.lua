@@ -18,26 +18,84 @@ local RequestMove = import(".Other.RequestMove")
 local RequestAttack = import(".Other.RequestAttack")
 
 
+--动作状态
+local ActionStatus = import(".Other.ActionStatus")
+
+
 function M:ctor(...)
     M.super.ctor(self, ...) 
+
+    --下一个技能
+    self.refSkill_next = nil
+end
+
+--判断是否可以释放技能
+function M:GetIsCanPlay()
+    return true
 end
 
 --压入一个技能, 
 function M:PushSkill(skillRefId)
 
-    local skillRefId_pre = nil
-    
-    --如果实在运行, 获取下
-    if self:GetIsRunning() then 
-        skillRefId_pre = self.refSkill.refId
+    ---------------------------------
+    --判断各种状态, 
+    ---------------------------------
+    if not self:GetIsCanPlay() then
+        return false
     end
 
-    --获取下一帧
-    local refSkill = RefSkill.GetNextRefSkill(skillRefId, skillRefId_pre)
 
+    local skillRefId_pre = nil
+    if self:GetIsRunning()  then 
+        --技能正在运行, 且进入了响应帧
+        if self:GetActionStatus():GetIsFrameResponse() then
+            self.refSkill_next = RefSkill.GetNextRefSkill( skillRefId, self:GetRefSkill().refId ) 
+        else
+            return false
+        end
+    else
+        --技能不在运行
+        local refSkill = RefSkill.GetNextRefSkill(skillRefId, nil)
+        self:Resume(refSkill)
+        return true
+    end
+end
+
+function M:Update()
+
+    --没有下一招技能
+    if not self.refSkill_next then return  end
+
+    --没有动作状态
+    local actionStatus = self:GetActionStatus()
+    if not actionStatus then return end
+
+    --没有进入了后摇
+    if not actionStatus:GetIsFrameEnd() then return end
+
+    --当前不能释放
+    if not self:GetIsCanPlay() then return end
+
+    --技能
+    local refSkill = self.refSkill_next
+    self.refSkill_next = nil
     self:Resume(refSkill)
 end
 
+--获取当前的actionStatus
+function M:GetActionStatus()
+    return self.actionStatus
+end
+
+--获取正在播放的skill
+function M:GetRefSkill()
+    return self.refSkill
+end
+
+--获取现在正在播放的refAction
+function M:GetRefAction()
+    return self.refAction
+end
 
 ---------------------------------
 -- 以下是内部函数
@@ -92,6 +150,7 @@ function M:PlaySkill_cor(refSkill)
 
     --当前正在播放的refSkill
     self.refSkill = refSkill
+    self.refSkill_next = nil
     self:GetSubAnimator():SetIsAuto(false)
     self.eventIndex = self:SyncAttack(refSkill)
 
@@ -100,6 +159,7 @@ function M:PlaySkill_cor(refSkill)
     ---------------------------------
     local function defer() 
         self.refSkill = nil
+        self.refSkill_next = nil
         self.eventIndex = nil
         self:GetSubAnimator():SetIsAuto(true)
     end
@@ -141,6 +201,9 @@ function M:PlayAction_cor(refAction)
     --当前的refAction
     self.refAction = refAction
 
+    --当前
+    self.actionStatus = ActionStatus.new()
+
     -- 所有需要dipose的对象
     local tlIDispose = {}
 
@@ -152,6 +215,7 @@ function M:PlayAction_cor(refAction)
     ---------------------------------
     local function defer() 
         self.refAction = nil
+        self.actionStatus = nil
 
         --恢复播放速度
         subAnimator:SetSpeed(1)
@@ -200,6 +264,7 @@ function M:PlayAction_cor(refAction)
                 --如果命中, 播放卡帧动画
                 local refAttackFrameEvent = frame.ref
                 local pauseTime = refAttackFrameEvent:GetAttackPauseTime()
+                time_offset = time_offset + pauseTime --偏移时间加上 pauseTime
                 if pauseTime > 0 then
                     subAnimator:SetSpeed(0)
                     local ret = self:Wait_cor( self:TriggerOfTime(pauseTime) )  if not ret then  defer() return ret end 
@@ -277,6 +342,33 @@ function M:FrameEffect(frame)
         return  {requestEffect} 
     end  
 end
+
+--前摇帧
+function M:FrameStart()
+    self.actionStatus:SetIsFrameStart(true)
+end
+
+--中断帧
+function M:FrameBreak()
+    self.actionStatus:SetIsFrameBreak(true)
+end
+
+--后摇帧
+function M:FrameEnd()
+    self.actionStatus:SetIsFrameEnd(true)
+end
+
+--响应帧
+function M:FrameResponse()
+    self.actionStatus:SetIsFrameResponse(true)
+end
+
+function M:FrameAudio()
+end
+
+function M:FrameCamera()
+end
+
 
 
 

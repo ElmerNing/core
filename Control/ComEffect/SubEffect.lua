@@ -44,6 +44,7 @@ function M:AddEffect(path, parentName, time, fCallback)
         local transform_parent = viewEntity:FindTransform(parentName)
         if transform_parent then
             transform.parent = transform_parent
+            transform.localPosition = Vector3.zero
             if fCallback then
                 fCallback(go, transform)
             end
@@ -63,7 +64,7 @@ function M:AddEffect(path, parentName, time, fCallback)
         Timer.New(function ()
             requestEffect:dispose()
             requestEffect = nil
-        end, time, 1)--:Start()
+        end, time, 1):Start()
     end
 
     return requestEffect

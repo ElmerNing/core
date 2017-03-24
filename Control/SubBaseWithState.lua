@@ -7,6 +7,8 @@ function M:ctor(...)
 
     M.super.ctor(self, ...)
 
+    local tlName = string.split(self.__cname, ".")
+    self.name = tlName[#tlName]
 end
 
 --获取此状态管理
@@ -63,7 +65,7 @@ function M:TriggerOfTime(time, time_start)
     local time_start = time_start or self:GetTime()
     return function()
         local time_now = self:GetTime()
-        return time_start + time < time_now
+        return time_start + time <= time_now
     end
 end
 
@@ -99,6 +101,7 @@ end
 
 
 function M:GetName()
+    return self.name
 end
 
 return M

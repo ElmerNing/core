@@ -63,6 +63,13 @@ function M:GetSubStateBase()
     return self.subStateBase
 end
 
+--获取当前状态的名字
+function M:GetSubStateBaseName()
+    if self.subStateBase then
+        return self.subStateBase:GetName()
+    end
+end
+
 --主循环
 function M:Loop_cor()
 

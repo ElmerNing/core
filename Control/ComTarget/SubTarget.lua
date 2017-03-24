@@ -10,8 +10,6 @@ local M = class(..., SubBase)
 function M:ctor(...)
     M.super.ctor(self, ...)
     
-    --entity组件
-    self.comEntity = self.com.comEntity
 
     --目标entity的key
     self.cmdSceneEntityKey_target = nil
@@ -54,7 +52,7 @@ function M:FindTargetByEnum(tlCmdEnumSceneEntity, distance_min)
     local cmdSceneEntityKey_min = nil
 
     --entity组件
-    local comEntity = self.comEntity
+    local comEntity = self.com.comEntity
 
     --搜索其中一项是否满足要求
     local function Search(modelEntity)
@@ -91,7 +89,7 @@ function M:SearchTlTargetByEnum(tlCmdEnumSceneEntity, distance_min)
     distance_min = distance_min or 10
 
     --entity组件
-    local comEntity = self.comEntity
+    local comEntity = self.com.comEntity
 
     local tlCmdSceneEntityKey = {}
 

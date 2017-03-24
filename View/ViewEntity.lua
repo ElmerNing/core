@@ -95,6 +95,10 @@ function M:GetEulerAngles()
     return self.transform_parent.eulerAngles
 end
 
+function M:SetEulerAngles(vec3)
+    self.transform_parent.eulerAngles = vec3
+end
+
 function M:LookAt(vec3)
     self.transform_parent:LookAt(vec3)
 end

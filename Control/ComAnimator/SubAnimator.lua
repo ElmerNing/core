@@ -104,26 +104,4 @@ function M:GetAnimator()
     return self.animator
 end
 
-function M:LateUpdate()
-    
-    --不是自由
-    --[[
-    if not self.isAuto then return end
-
-    --animator
-    local viewEntityActor = self.viewEntityActor
-    local animator = self.viewEntityActor:GetAnimator()
-    if not animator then return end
-
-    --判断逻辑
-    local navMeshRender = viewEntityActor:GetNavMeshAgent()
-    if navMeshRender.velocity.sqrMagnitude > 2 then
-        self:SetState(animator, "run")
-    else
-        self:SetState(animator, "stand")
-    end 
-    ]]
-end
-
-
 return M

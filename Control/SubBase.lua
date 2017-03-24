@@ -26,6 +26,10 @@ function M:GetIsSelf()
     return self.modelEntity:GetId() == Core.GetPlayerId()
 end
 
+function M:GetSub(comName)
+    return self.com.comEntity:GetSub(self.cmdSceneEntityKey, comName)
+end
+
 function M:dispose()
     self.isDisposed = true
 end
